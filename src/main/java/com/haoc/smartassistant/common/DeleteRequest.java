@@ -4,7 +4,7 @@ import java.io.Serializable;
 import lombok.Data;
 
 /**
- * 删除请求
+ * Delete Request
  *
  *
  */

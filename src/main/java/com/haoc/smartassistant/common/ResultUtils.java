@@ -1,14 +1,13 @@
 package com.haoc.smartassistant.common;
 
 /**
- * 返回工具类
- *
+ * Utility class for returning responses
  *
  */
 public class ResultUtils {
 
     /**
-     * 成功
+     * Success
      *
      * @param data
      * @param <T>
@@ -19,7 +18,7 @@ public class ResultUtils {
     }
 
     /**
-     * 失败
+     * Failure
      *
      * @param errorCode
      * @return
@@ -29,7 +28,7 @@ public class ResultUtils {
     }
 
     /**
-     * 失败
+     * Failure
      *
      * @param code
      * @param message
@@ -40,7 +39,7 @@ public class ResultUtils {
     }
 
     /**
-     * 失败
+     * Failure
      *
      * @param errorCode
      * @return

@@ -4,30 +4,29 @@ import com.haoc.smartassistant.constant.CommonConstant;
 import lombok.Data;
 
 /**
- * 分页请求
- *
+ * Pagination request
  *
  */
 @Data
 public class PageRequest {
 
     /**
-     * 当前页号
+     * Current page number
      */
     private int current = 1;
 
     /**
-     * 页面大小
+     * Page size
      */
     private int pageSize = 10;
 
     /**
-     * 排序字段
+     * Sorting field
      */
     private String sortField;
 
     /**
-     * 排序顺序（默认升序）
+     * Sorting order (default is ascending)
      */
     private String sortOrder = CommonConstant.SORT_ORDER_ASC;
 }

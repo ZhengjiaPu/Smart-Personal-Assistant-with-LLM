@@ -6,8 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 权限校验
- *
+ * Permission verification
  *
  */
 @Target(ElementType.METHOD)
@@ -15,11 +14,10 @@ import java.lang.annotation.Target;
 public @interface AuthCheck {
 
     /**
-     * 必须有某个角色
+     * Must have a specific role
      *
      * @return
      */
     String mustRole() default "";
 
 }
-

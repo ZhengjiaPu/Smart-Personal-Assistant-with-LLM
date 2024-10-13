@@ -1,28 +1,27 @@
 package com.haoc.smartassistant.common;
 
 /**
- * 自定义错误码
- *
+ * Custom error codes
  *
  */
 public enum ErrorCode {
 
     SUCCESS(0, "ok"),
-    PARAMS_ERROR(40000, "请求参数错误"),
-    NOT_LOGIN_ERROR(40100, "未登录"),
-    NO_AUTH_ERROR(40101, "无权限"),
-    NOT_FOUND_ERROR(40400, "请求数据不存在"),
-    FORBIDDEN_ERROR(40300, "禁止访问"),
-    SYSTEM_ERROR(50000, "系统内部异常"),
-    OPERATION_ERROR(50001, "操作失败");
+    PARAMS_ERROR(40000, "Request parameter error"),
+    NOT_LOGIN_ERROR(40100, "Not logged in"),
+    NO_AUTH_ERROR(40101, "No permission"),
+    NOT_FOUND_ERROR(40400, "Requested data not found"),
+    FORBIDDEN_ERROR(40300, "Forbidden access"),
+    SYSTEM_ERROR(50000, "Internal system error"),
+    OPERATION_ERROR(50001, "Operation failed");
 
     /**
-     * 状态码
+     * Status code
      */
     private final int code;
 
     /**
-     * 信息
+     * Message
      */
     private final String message;
 
