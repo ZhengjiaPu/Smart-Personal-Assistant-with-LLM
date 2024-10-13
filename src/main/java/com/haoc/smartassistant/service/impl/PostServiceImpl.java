@@ -7,20 +7,16 @@ import com.haoc.smartassistant.common.ErrorCode;
 import com.haoc.smartassistant.constant.CommonConstant;
 import com.haoc.smartassistant.exception.BusinessException;
 import com.haoc.smartassistant.exception.ThrowUtils;
-import com.haoc.smartassistant.mapper.PostFavourMapper;
 import com.haoc.smartassistant.mapper.PostMapper;
-import com.haoc.smartassistant.mapper.PostThumbMapper;
 import com.haoc.smartassistant.model.dto.post.PostQueryRequest;
 import com.haoc.smartassistant.model.entity.Post;
-import com.haoc.smartassistant.model.entity.PostFavour;
-import com.haoc.smartassistant.model.entity.PostThumb;
 import com.haoc.smartassistant.model.entity.User;
 import com.haoc.smartassistant.model.vo.PostVO;
 import com.haoc.smartassistant.model.vo.UserVO;
 import com.haoc.smartassistant.service.PostService;
 import com.haoc.smartassistant.service.UserService;
 import com.haoc.smartassistant.utils.SqlUtils;
-import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +28,6 @@ import lombok.extern.slf4j.Slf4j;
 import cn.hutool.core.collection.CollUtil;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 /**
@@ -47,11 +42,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
     @Resource
     private UserService userService;
 
-    @Resource
-    private PostThumbMapper postThumbMapper;
 
-    @Resource
-    private PostFavourMapper postFavourMapper;
 
 
 
@@ -132,18 +123,6 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         // 2. 已登录，获取用户点赞、收藏状态
         User loginUser = userService.getLoginUserPermitNull(request);
         if (loginUser != null) {
-            // 获取点赞
-            QueryWrapper<PostThumb> postThumbQueryWrapper = new QueryWrapper<>();
-            postThumbQueryWrapper.in("postId", postId);
-            postThumbQueryWrapper.eq("userId", loginUser.getId());
-            PostThumb postThumb = postThumbMapper.selectOne(postThumbQueryWrapper);
-            postVO.setHasThumb(postThumb != null);
-            // 获取收藏
-            QueryWrapper<PostFavour> postFavourQueryWrapper = new QueryWrapper<>();
-            postFavourQueryWrapper.in("postId", postId);
-            postFavourQueryWrapper.eq("userId", loginUser.getId());
-            PostFavour postFavour = postFavourMapper.selectOne(postFavourQueryWrapper);
-            postVO.setHasFavour(postFavour != null);
         }
         return postVO;
     }
@@ -166,18 +145,6 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         if (loginUser != null) {
             Set<Long> postIdSet = postList.stream().map(Post::getId).collect(Collectors.toSet());
             loginUser = userService.getLoginUser(request);
-            // 获取点赞
-            QueryWrapper<PostThumb> postThumbQueryWrapper = new QueryWrapper<>();
-            postThumbQueryWrapper.in("postId", postIdSet);
-            postThumbQueryWrapper.eq("userId", loginUser.getId());
-            List<PostThumb> postPostThumbList = postThumbMapper.selectList(postThumbQueryWrapper);
-            postPostThumbList.forEach(postPostThumb -> postIdHasThumbMap.put(postPostThumb.getPostId(), true));
-            // 获取收藏
-            QueryWrapper<PostFavour> postFavourQueryWrapper = new QueryWrapper<>();
-            postFavourQueryWrapper.in("postId", postIdSet);
-            postFavourQueryWrapper.eq("userId", loginUser.getId());
-            List<PostFavour> postFavourList = postFavourMapper.selectList(postFavourQueryWrapper);
-            postFavourList.forEach(postFavour -> postIdHasFavourMap.put(postFavour.getPostId(), true));
         }
         // 填充信息
         List<PostVO> postVOList = postList.stream().map(post -> {
