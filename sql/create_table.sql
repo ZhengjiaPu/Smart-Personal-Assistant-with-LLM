@@ -20,7 +20,7 @@ create table if not exists user
     createTime   datetime     default CURRENT_TIMESTAMP not null comment 'CreateTime',
     updateTime   datetime     default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'UpdateTime',
     isDelete     tinyint      default 0                 not null comment 'IsDelete',
-    index idx_unionId (id)
+    index idx_Id (id)
 ) comment 'user' collate = utf8mb4_unicode_ci;
 
 -- 报告表

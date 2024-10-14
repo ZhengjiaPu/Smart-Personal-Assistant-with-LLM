@@ -52,12 +52,12 @@ public class ReportController {
     @PostMapping("/add")
     public BaseResponse<Long> addReport(@RequestBody ReportAddRequest reportAddRequest, HttpServletRequest request) {
         ThrowUtils.throwIf(reportAddRequest == null, ErrorCode.PARAMS_ERROR);
-        // todo 在此处将实体类和 DTO 进行转换
+        // 在此处将实体类和 DTO 进行转换
         Report report = new Report();
         BeanUtils.copyProperties(reportAddRequest, report);
         // 数据校验
         reportService.validReport(report, true);
-        // todo 填充默认值
+        // 填充默认值
         User loginUser = userService.getLoginUser(request);
         report.setUserId(loginUser.getId());
         // 写入数据库
