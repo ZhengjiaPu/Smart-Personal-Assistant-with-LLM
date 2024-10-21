@@ -22,7 +22,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/spa_db
     username: root
-    password: ch1028390030
+    password: 1234
   # Redis 配置
   # todo 需替换配置，然后取消注释
 #  redis:
@@ -65,3 +65,8 @@ knife4j:
         api-rule: package
         api-rule-resources:
           - com.haoc.smartassistant.controller
+# OpenAI API配置
+openai:
+  api:
+    key: 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
+    url: https://api.openai.com/v1/completions

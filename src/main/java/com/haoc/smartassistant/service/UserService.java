@@ -7,6 +7,7 @@ import com.haoc.smartassistant.model.entity.User;
 import com.haoc.smartassistant.model.vo.LoginUserVO;
 import com.haoc.smartassistant.model.vo.UserVO;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 
@@ -108,5 +109,22 @@ public interface UserService extends IService<User> {
      * @return
      */
     QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest);
+
+
+    /**
+     * 获取用户健康数据
+     *
+     * @param userId 用户ID
+     * @return 用户健康数据（Map形式）
+     */
+    Map<String, Object> getHealthData(String userId);
+
+    /**
+     * 获取用户饮食偏好
+     *
+     * @param userId 用户ID
+     * @return 用户饮食偏好（Map形式）
+     */
+    Map<String, Object> getPreferences(String userId);
 
 }
