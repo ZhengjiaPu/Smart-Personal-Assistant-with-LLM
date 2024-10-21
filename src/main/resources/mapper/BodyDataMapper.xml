@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haoc.smartassistant.mapper.BodyDataMapper">
+
+    <resultMap id="BaseResultMap" type="com.haoc.smartassistant.model.entity.BodyData">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="userId" column="userId" jdbcType="BIGINT"/>
+            <result property="height_cm" column="height_cm" jdbcType="DECIMAL"/>
+            <result property="weight_kg" column="weight_kg" jdbcType="DECIMAL"/>
+            <result property="bmi" column="bmi" jdbcType="DECIMAL"/>
+            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+            <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,content,userId,
+        height_cm,weight_kg,bmi,
+        createTime,updateTime,isDelete
+    </sql>
+</mapper>
