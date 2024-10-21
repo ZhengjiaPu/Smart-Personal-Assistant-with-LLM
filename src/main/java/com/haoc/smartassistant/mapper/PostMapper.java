@@ -2,6 +2,8 @@ package com.haoc.smartassistant.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.haoc.smartassistant.model.entity.Post;
+import org.apache.ibatis.annotations.Mapper;
+
 import java.util.Date;
 import java.util.List;
 
@@ -10,6 +12,7 @@ import java.util.List;
  *
  *
  */
+
 public interface PostMapper extends BaseMapper<Post> {
 
     /**

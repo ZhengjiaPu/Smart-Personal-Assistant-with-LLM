@@ -7,7 +7,7 @@ import com.haoc.smartassistant.model.dto.report.ReportQueryRequest;
 import com.haoc.smartassistant.model.entity.Report;
 import com.haoc.smartassistant.model.vo.ReportVO;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * report服务

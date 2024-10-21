@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.haoc.smartassistant.model.dto.post.PostQueryRequest;
 import com.haoc.smartassistant.model.entity.Post;
 import com.haoc.smartassistant.model.vo.PostVO;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * 帖子服务

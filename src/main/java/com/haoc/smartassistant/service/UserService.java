@@ -7,7 +7,7 @@ import com.haoc.smartassistant.model.entity.User;
 import com.haoc.smartassistant.model.vo.LoginUserVO;
 import com.haoc.smartassistant.model.vo.UserVO;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 
 /**

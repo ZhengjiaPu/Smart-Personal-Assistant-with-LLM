@@ -7,7 +7,7 @@ import com.haoc.smartassistant.model.dto.schedules.SchedulesQueryRequest;
 import com.haoc.smartassistant.model.entity.Schedules;
 import com.haoc.smartassistant.model.vo.SchedulesVO;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * schedules服务

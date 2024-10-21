@@ -48,4 +48,19 @@ create table if not exists schedules
     index idx_userId (userId)
 ) comment 'report' collate = utf8mb4_unicode_ci;
 
+-- Body Data表
+create table if not exists body_data
+(
+    id         bigint auto_increment comment 'id' primary key,
+    userId     bigint                             not null comment 'userId',
+    height_cm    DECIMAL(5, 2)                      NULL COMMENT 'User height in cm',  -- User height in cm
+    weight_kg    DECIMAL(5, 2)                      NULL COMMENT 'User weight in kg',  -- User weight in kg
+    bmi          DECIMAL(5, 2)                      GENERATED ALWAYS AS (weight_kg / (height_cm / 100 * height_cm / 100)) STORED COMMENT 'Calculated BMI',  -- Calculated BMI
+    createTime datetime default CURRENT_TIMESTAMP not null comment 'createTime',
+    updateTime datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updateTime',
+    isDelete   tinyint  default 0                 not null comment 'isDelete',
+    CONSTRAINT fk_user FOREIGN KEY (userId) REFERENCES user(id) ON DELETE CASCADE,  -- Foreign key constraint with cascade delete
+    index idx_userId (userId)
+) comment 'body_data' collate = utf8mb4_unicode_ci;
+
 
