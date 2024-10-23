@@ -18,8 +18,10 @@ import com.haoc.smartassistant.model.dto.user.UserUpdateRequest;
 import com.haoc.smartassistant.model.entity.User;
 import com.haoc.smartassistant.model.vo.LoginUserVO;
 import com.haoc.smartassistant.model.vo.UserVO;
+import com.haoc.smartassistant.service.UserAvatarService;
 import com.haoc.smartassistant.service.UserService;
 
+import java.io.IOException;
 import java.util.List;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,7 +39,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import static com.haoc.smartassistant.service.impl.UserServiceImpl.SALT;
 
 /**
@@ -52,7 +57,8 @@ public class UserController {
     @Resource
     private UserService userService;
 
-
+    @Autowired
+    private UserAvatarService userAvatarService;
 
     // region 登录相关
 
@@ -291,5 +297,17 @@ public class UserController {
         boolean result = userService.updateById(user);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(true);
+    }
+
+    @PostMapping("/upload-avatar")
+    public ResponseEntity<String> uploadAvatar(
+            @RequestParam("avatar") MultipartFile avatarFile,
+            @RequestParam("userAccount") String userAccount) {
+        try {
+            String avatarUrl = userAvatarService.uploadAvatar(userAccount, avatarFile);
+            return ResponseEntity.ok(avatarUrl);
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body("Avatar upload failed: " + e.getMessage());
+        }
     }
 }

@@ -11,7 +11,7 @@ VALUES
 -- 插入 body_data 数据
 INSERT INTO body_data (userId, height_cm, weight_kg, createTime, updateTime)
 VALUES
-    (1845693955367346178, 175.00, 70.00, NOW(), NOW()),  -- Admin 用户的 body_data
-    (1845693955367346179, 180.00, 85.00, NOW(), NOW()),  -- user1 的 body_data
-    (1845693955367346180, 165.00, 60.00, NOW(), NOW()),  -- user2 的 body_data
-    (1845693955367346181, 170.00, 75.00, NOW(), NOW());  -- user3 的 body_data
+    (1, 175.00, 70.00, NOW(), NOW()),  -- Admin 用户的 body_data
+    (2, 180.00, 85.00, NOW(), NOW()),  -- user1 的 body_data
+    (3, 165.00, 60.00, NOW(), NOW()),  -- user2 的 body_data
+    (4, 170.00, 75.00, NOW(), NOW());  -- user3 的 body_data
