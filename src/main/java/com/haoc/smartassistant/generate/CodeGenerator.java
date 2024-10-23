@@ -28,9 +28,9 @@ public class CodeGenerator {
     public static void main(String[] args) throws TemplateException, IOException {
         // 指定生成参数
         String packageName = "com.haoc.smartassistant";
-        String dataName = "schedules";
-        String dataKey = "schedules";
-        String upperDataKey = "Schedules";
+        String dataName = "bodyData";
+        String dataKey = "bodyData";
+        String upperDataKey = "BodyData";
 
         // 封装生成参数
         Map<String, Object> dataModel = new HashMap<>();

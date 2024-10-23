@@ -2,6 +2,7 @@ package com.haoc.smartassistant.mapper;
 
 import com.haoc.smartassistant.model.entity.Report;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
 * @author haochen
@@ -9,6 +10,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @createDate 2024-10-13 15:27:02
 * @Entity com.haoc.smartassistant.model.entity.Report
 */
+
 public interface ReportMapper extends BaseMapper<Report> {
 
 }

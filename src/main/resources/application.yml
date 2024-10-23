@@ -20,9 +20,9 @@ spring:
   # todo 需替换配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/my_db
+    url: jdbc:mysql://localhost:3306/spa_db
     username: root
-    password: 123456
+    password: ch1028390030
   # Redis 配置
   # todo 需替换配置，然后取消注释
 #  redis:
@@ -36,6 +36,34 @@ spring:
     multipart:
       # 大小限制
       max-file-size: 10MB
+
+
+langchain4j:
+  open-ai:
+    chat-model:
+      api-key: ${OPENAI_API_KEY}
+      model-name: gpt-3.5-turbo          # 使用的模型名称
+      strict-tools: true               # 严格的工具配置
+      temperature: 0.0                 # 模型的温度参数
+      timeout: PT60S                   # 请求超时时间
+      log-requests: false              # 是否记录请求日志
+      log-responses: false             # 是否记录响应日志
+    streaming-chat-model:
+      api-key: ${OPENAI_API_KEY}
+      model-name: gpt-3.5-turbo        # 使用 gpt-3.5-turbo 模型
+      log-requests: true               # 开启日志记录
+      log-responses: true              # 开启响应日志记录
+
+logging:
+  level:
+    dev:
+      ai4j:
+        openai4j: DEBUG                # 设置 OpenAI4j 的日志级别为 DEBUG
+      langchain4j: DEBUG               # 设置 Langchain4j 的日志级别为 DEBUG
+    com.haoc.smartassistant.mapper: DEBUG
+    org.mybatis: DEBUG
+
+
 server:
   address: 0.0.0.0
   port: 8101
@@ -46,6 +74,7 @@ server:
       cookie:
         max-age: 2592000
 mybatis-plus:
+  mapper-locations: classpath:/mapper/**/*.xml
   configuration:
     map-underscore-to-camel-case: false
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
@@ -55,13 +84,20 @@ mybatis-plus:
       logic-delete-value: 1 # 逻辑已删除值（默认为 1）
       logic-not-delete-value: 0 # 逻辑未删除值（默认为 0）
 # 接口文档配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: 'default'
+      paths-to-match: '/**'
+      packages-to-scan: com.haoc.smartassistant.controller
+
 knife4j:
   enable: true
-  openapi:
-    title: "接口文档"
-    version: 1.0
-    group:
-      default:
-        api-rule: package
-        api-rule-resources:
-          - com.haoc.smartassistant.controller
+  setting:
+    language: zh_cn
+
