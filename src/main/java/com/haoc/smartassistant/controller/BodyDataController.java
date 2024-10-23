@@ -2,6 +2,7 @@ package com.haoc.smartassistant.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.haoc.smartassistant.aiservices.DietPlanningAIService;
+import com.haoc.smartassistant.aiservices.RecommendedMusicAIService;
 import com.haoc.smartassistant.aiservices.StreamingDietPlanningAIService;
 import com.haoc.smartassistant.annotation.AuthCheck;
 import com.haoc.smartassistant.common.BaseResponse;
@@ -12,6 +13,7 @@ import com.haoc.smartassistant.constant.UserConstant;
 import com.haoc.smartassistant.exception.BusinessException;
 import com.haoc.smartassistant.exception.ThrowUtils;
 import com.haoc.smartassistant.model.dto.bodyData.BodyDataAddRequest;
+import com.haoc.smartassistant.model.dto.bodyData.BodyDataAiRequest;
 import com.haoc.smartassistant.model.dto.bodyData.BodyDataQueryRequest;
 import com.haoc.smartassistant.model.dto.bodyData.BodyDataUpdateRequest;
 import com.haoc.smartassistant.model.entity.BodyData;
@@ -48,6 +50,8 @@ public class BodyDataController {
 
     @Autowired
     private StreamingDietPlanningAIService streamingDietPlanningAIService;
+    @Autowired
+    private RecommendedMusicAIService recommendedMusicAIService;
 
     // region 增删改查
 
@@ -214,10 +218,10 @@ public class BodyDataController {
         return ResultUtils.success(bodyDataService.getBodyDataVOPage(bodyDataPage, request));
     }
 
-    // AI - Methods
+    // AI Methods for Automatic Meal and Diet Planning
     /**
      * Generate diet plan based on the user's body data
-     * @param userId ID of the user
+     * @param userId
      * @return Stream of DietPlanVO objects
      */
     @GetMapping("/generate-diet-plan/{userId}")
@@ -231,16 +235,36 @@ public class BodyDataController {
 
     /**
      * Adjust diet plan based on user feedback
-     * @param userId ID of the user
-     * @param adjustmentCommand Feedback or adjustment command from the user
+     * @param bodyDataAiRequest include user id and adjustmentCommand
      * @return Stream of updated DietPlanVO objects
      */
-    @PostMapping("/adjust-diet-plan/{userId}")
-    public Flux<String> adjustDietPlan(@PathVariable Long userId, @RequestBody String adjustmentCommand) {
+    @PostMapping("/adjust-diet-plan/")
+    public Flux<String> adjustDietPlan(@RequestBody BodyDataAiRequest bodyDataAiRequest) {
+        Long userId = bodyDataAiRequest.getUserID();
+        String adjustmentCommand = bodyDataAiRequest.getAdjustmentCommand();
         ThrowUtils.throwIf(userId <= 0, ErrorCode.PARAMS_ERROR);
         BodyData bodyData = bodyDataService.getBodyDataByUserId(userId);
         ThrowUtils.throwIf(bodyData == null, ErrorCode.NOT_FOUND_ERROR);
-        return streamingDietPlanningAIService.adjustDietPlan(bodyData.toString(), adjustmentCommand);
+        return streamingDietPlanningAIService.adjustDietPlan(adjustmentCommand);
     }
+
+    // AI Methods for Mood-Based Music Recommendations
+    /**
+     * get AI Recommended Music based on mood and body data
+     * @param userId
+     * @return Stream of DietPlanVO objects
+     */
+    @GetMapping("/recommend/{userId}")
+    public String getAIRecommendedMusic(@PathVariable Long userId, @RequestParam String mood) {
+        ThrowUtils.throwIf(userId <= 0, ErrorCode.PARAMS_ERROR);
+        ThrowUtils.throwIf(mood== null, ErrorCode.PARAMS_ERROR);
+        BodyData bodyData = bodyDataService.getBodyDataByUserId(userId);
+        ThrowUtils.throwIf(bodyData == null, ErrorCode.NOT_FOUND_ERROR);
+
+        System.out.println("mood    ---------- "+mood);
+        return recommendedMusicAIService.generateRecommendedMusic(bodyData.toString(),mood);
+    }
+
+
     // endregion
 }
