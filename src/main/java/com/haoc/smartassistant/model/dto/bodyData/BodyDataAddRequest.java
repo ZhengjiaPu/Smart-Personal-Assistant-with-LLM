@@ -4,6 +4,7 @@ import lombok.Data;
 import org.apache.poi.hpsf.Decimal;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -17,17 +18,13 @@ public class BodyDataAddRequest implements Serializable {
     /**
      * height_cm
      */
-    private Decimal height_cm;
+    private Integer height_cm;
 
     /**
      * weight_kg
      */
-    private Decimal weight_kg;
+    private Integer weight_kg;
 
-    /**
-     * bmi
-     */
-    private Decimal bmi;
 
     private static final long serialVersionUID = 1L;
 }

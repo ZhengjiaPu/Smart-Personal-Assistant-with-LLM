@@ -9,18 +9,25 @@ import com.haoc.smartassistant.common.ResultUtils;
 import com.haoc.smartassistant.constant.UserConstant;
 import com.haoc.smartassistant.exception.BusinessException;
 import com.haoc.smartassistant.exception.ThrowUtils;
+import com.haoc.smartassistant.model.dto.bodyData.BodyDataAddRequest;
 import com.haoc.smartassistant.model.dto.user.UserAddRequest;
 import com.haoc.smartassistant.model.dto.user.UserLoginRequest;
 import com.haoc.smartassistant.model.dto.user.UserQueryRequest;
 import com.haoc.smartassistant.model.dto.user.UserRegisterRequest;
 import com.haoc.smartassistant.model.dto.user.UserUpdateMyRequest;
 import com.haoc.smartassistant.model.dto.user.UserUpdateRequest;
+import com.haoc.smartassistant.model.entity.BodyData;
 import com.haoc.smartassistant.model.entity.User;
 import com.haoc.smartassistant.model.vo.LoginUserVO;
 import com.haoc.smartassistant.model.vo.UserVO;
 import com.haoc.smartassistant.service.UserService;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Date;
 import java.util.List;
+import java.util.Random;
+
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -51,7 +58,8 @@ public class UserController {
 
     @Resource
     private UserService userService;
-
+    @Resource
+    private BodyDataController bodyDataController;
 
 
     // region 登录相关
@@ -74,6 +82,24 @@ public class UserController {
             return null;
         }
         long result = userService.userRegister(userAccount, userPassword, checkPassword);
+
+        // generate random body data
+        Random random = new Random();
+        Integer randomHeight = 150 + random.nextInt(50); // 随机生成150-200 cm 的身高
+        Integer randomWeight = 50 + random.nextInt(50);  // 随机生成50-100 kg 的体重
+
+        // insert BodyData
+        BodyDataAddRequest bodyDataAddRequest = new BodyDataAddRequest();
+
+        bodyDataAddRequest.setHeight_cm(randomHeight);
+        bodyDataAddRequest.setWeight_kg(randomWeight);
+        Long result1 = bodyDataController.addBodyData(bodyDataAddRequest, result);
+
+
+        if (result1 == null) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "userRegister，insert body data error");
+        }
+
         return ResultUtils.success(result);
     }
 

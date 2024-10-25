@@ -59,85 +59,26 @@ public class BodyDataController {
      * 创建bodyData
      *
      * @param bodyDataAddRequest
-     * @param request
      * @return
      */
-    @PostMapping("/add")
-    public BaseResponse<Long> addBodyData(@RequestBody BodyDataAddRequest bodyDataAddRequest, HttpServletRequest request) {
+    public Long addBodyData(@RequestBody BodyDataAddRequest bodyDataAddRequest,Long userId) {
         ThrowUtils.throwIf(bodyDataAddRequest == null, ErrorCode.PARAMS_ERROR);
         // todo 在此处将实体类和 DTO 进行转换
         BodyData bodyData = new BodyData();
         BeanUtils.copyProperties(bodyDataAddRequest, bodyData);
-        // 数据校验
-        bodyDataService.validBodyData(bodyData, true);
+
         // todo 填充默认值
-        User loginUser = userService.getLoginUser(request);
-        bodyData.setUserId(loginUser.getId());
+
+        bodyData.setUserId(userId);
         // 写入数据库
         boolean result = bodyDataService.save(bodyData);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         // 返回新写入的数据 id
         long newBodyDataId = bodyData.getId();
-        return ResultUtils.success(newBodyDataId);
+        return newBodyDataId;
     }
 
-    /**
-     * 删除bodyData
-     *
-     * @param deleteRequest
-     * @param request
-     * @return
-     */
-    @PostMapping("/delete")
-    public BaseResponse<Boolean> deleteBodyData(@RequestBody DeleteRequest deleteRequest, HttpServletRequest request) {
-        if (deleteRequest == null || deleteRequest.getId() <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        User user = userService.getLoginUser(request);
-        long id = deleteRequest.getId();
-        // 判断是否存在
-        BodyData oldBodyData = bodyDataService.getById(id);
-        ThrowUtils.throwIf(oldBodyData == null, ErrorCode.NOT_FOUND_ERROR);
-        // 仅本人或管理员可删除
-        if (!oldBodyData.getUserId().equals(user.getId()) && !userService.isAdmin(request)) {
-            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
-        }
-        // 操作数据库
-        boolean result = bodyDataService.removeById(id);
-        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
-        return ResultUtils.success(true);
-    }
 
-    /**
-     * 更新bodyData（仅本人或管理员）
-     *
-     * @param bodyDataUpdateRequest
-     * @return
-     */
-    @PostMapping("/update")
-    public BaseResponse<Boolean> updateBodyData(@RequestBody BodyDataUpdateRequest bodyDataUpdateRequest, HttpServletRequest request) {
-        if (bodyDataUpdateRequest == null || bodyDataUpdateRequest.getId() <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        User user = userService.getLoginUser(request);
-        // todo 在此处将实体类和 DTO 进行转换
-        BodyData bodyData = new BodyData();
-        BeanUtils.copyProperties(bodyDataUpdateRequest, bodyData);
-        // 数据校验
-        bodyDataService.validBodyData(bodyData, false);
-        // 判断是否存在
-        long id = bodyDataUpdateRequest.getId();
-        BodyData oldBodyData = bodyDataService.getById(id);
-        ThrowUtils.throwIf(oldBodyData == null, ErrorCode.NOT_FOUND_ERROR);
-        // 仅本人或管理员可更新
-        if (!oldBodyData.getUserId().equals(user.getId()) && !userService.isAdmin(request)) {
-            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
-        }
-        // 操作数据库
-        boolean result = bodyDataService.updateById(bodyData);
-        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
-        return ResultUtils.success(true);
-    }
 
     /**
      * 根据 id 获取bodyData（封装类）
@@ -226,6 +167,7 @@ public class BodyDataController {
      */
     @GetMapping("/generate-diet-plan/{userId}")
     public Flux<String> generateDietPlan(@PathVariable Long userId) {
+
         ThrowUtils.throwIf(userId <= 0, ErrorCode.PARAMS_ERROR);
         BodyData bodyData = bodyDataService.getBodyDataByUserId(userId);
         ThrowUtils.throwIf(bodyData == null, ErrorCode.NOT_FOUND_ERROR);
@@ -258,8 +200,15 @@ public class BodyDataController {
     public String getAIRecommendedMusic(@PathVariable Long userId, @RequestParam String mood) {
         ThrowUtils.throwIf(userId <= 0, ErrorCode.PARAMS_ERROR);
         ThrowUtils.throwIf(mood== null, ErrorCode.PARAMS_ERROR);
+
+
         BodyData bodyData = bodyDataService.getBodyDataByUserId(userId);
-        ThrowUtils.throwIf(bodyData == null, ErrorCode.NOT_FOUND_ERROR);
+
+//        // user doesn't have body data information
+//        if (bodyData == null){
+//            log.info("Given user doesn't have body data information");
+//            return recommendedMusicAIService.generateRecommendedMusic(null, mood);
+//        }
 
         System.out.println("mood    ---------- "+mood);
         return recommendedMusicAIService.generateRecommendedMusic(bodyData.toString(),mood);

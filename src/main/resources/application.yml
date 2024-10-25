@@ -37,7 +37,13 @@ spring:
       # 大小限制
       max-file-size: 10MB
 
+# Spotify config
+spotify:
+  customer:
+    server: ip=http://localhost:3000
 
+
+# lang chain config
 langchain4j:
   open-ai:
     chat-model:
