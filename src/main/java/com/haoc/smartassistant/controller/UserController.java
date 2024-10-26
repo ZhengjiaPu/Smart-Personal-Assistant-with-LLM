@@ -22,6 +22,7 @@ import com.haoc.smartassistant.service.UserAvatarService;
 import com.haoc.smartassistant.service.UserService;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.List;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -299,15 +301,28 @@ public class UserController {
         return ResultUtils.success(true);
     }
 
+    /**
+     *
+     * @param avatarFile
+     * @param id
+     * @return ResponseEntity including the response of upload results
+     */
     @PostMapping("/upload-avatar")
-    public ResponseEntity<String> uploadAvatar(
+    public ResponseEntity<BaseResponse<String>> uploadAvatar(
             @RequestParam("avatar") MultipartFile avatarFile,
-            @RequestParam("userAccount") String userAccount) {
+            @RequestParam("id") String id) {
         try {
-            String avatarUrl = userAvatarService.uploadAvatar(userAccount, avatarFile);
-            return ResponseEntity.ok(avatarUrl);
+            BigInteger userId = new BigInteger(id);
+            String avatarUrl = userAvatarService.uploadAvatar(userId, avatarFile);
+
+            return ResponseEntity.ok(new BaseResponse<>(0, avatarUrl));
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body(new BaseResponse<>(1, "Invalid user ID format.", null));
         } catch (IOException e) {
-            return ResponseEntity.status(500).body("Avatar upload failed: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new BaseResponse<>(1, "Avatar upload failed: " + e.getMessage(), null));
         }
     }
+
+
 }
