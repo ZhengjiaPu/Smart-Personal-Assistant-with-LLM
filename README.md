@@ -12,7 +12,7 @@
 
    - The database is automatically created when the MySQL container starts and the table structure and data are initialized based on the mounted SQL files.
 
-     - **How to check**: run `docker exec -it smart-personal-assistant-with-llm-mysql-1 mysql -u root -p`, input your password, and check if all the data exist.
+     - **How to check**: run `docker exec -it smart-personal-assistant-with-llm-mysql-1 mysql -u root -p`, input password 1234, and check if all the data exist.
 
        ```mysql
        USE spa_db;
