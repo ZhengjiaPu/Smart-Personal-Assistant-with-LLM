@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hpsf.Decimal;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
@@ -39,49 +40,9 @@ import java.util.stream.Collectors;
 public class BodyDataServiceImpl extends ServiceImpl<BodyDataMapper, BodyData> implements BodyDataService {
 
     @Resource
+    @Lazy
     private UserService userService;
 
-    /**
-     * 校验数据
-     *
-     * @param bodyData
-     * @param add      对创建的数据进行校验
-     */
-    @Override
-    public void validBodyData(BodyData bodyData, boolean add) {
-        ThrowUtils.throwIf(bodyData == null, ErrorCode.PARAMS_ERROR);
-        //  从对象中取值
-        BigDecimal height_cm = bodyData.getHeight_cm();
-        BigDecimal weight_kg = bodyData.getWeight_kg();
-        BigDecimal bmi = bodyData.getBmi();
-
-        // 创建数据时，参数不能为空
-        if (add) {
-            //  补充校验规则
-            ThrowUtils.throwIf(weight_kg == null || weight_kg.compareTo(BigDecimal.ZERO) <= 0,
-                    ErrorCode.PARAMS_ERROR, "体重不能为空或小于等于0");
-            ThrowUtils.throwIf(height_cm == null || height_cm.compareTo(BigDecimal.ZERO) <= 0,
-                    ErrorCode.PARAMS_ERROR, "身高不能为空或小于等于0");
-            ThrowUtils.throwIf(bmi == null || bmi.compareTo(BigDecimal.ZERO) <= 0,
-                    ErrorCode.PARAMS_ERROR, "BMI 不能为空或小于等于0");
-        }
-        // 修改数据时，有参数则校验
-        //  补充校验规则
-        if (height_cm != null) {
-            ThrowUtils.throwIf(height_cm.compareTo(BigDecimal.valueOf(50)) < 0 ||
-                    height_cm.compareTo(BigDecimal.valueOf(300)) > 0, ErrorCode.PARAMS_ERROR, "身高不在合理范围内");
-        }
-
-        if (weight_kg != null) {
-            ThrowUtils.throwIf(weight_kg.compareTo(BigDecimal.valueOf(1)) < 0 ||
-                    weight_kg.compareTo(BigDecimal.valueOf(500)) > 0, ErrorCode.PARAMS_ERROR, "体重不在合理范围内");
-        }
-
-        if (bmi != null) {
-            ThrowUtils.throwIf(bmi.compareTo(BigDecimal.valueOf(10)) < 0 ||
-                    bmi.compareTo(BigDecimal.valueOf(60)) > 0, ErrorCode.PARAMS_ERROR, "BMI 不在合理范围内");
-        }
-    }
 
     /**
      * 获取查询条件
@@ -98,9 +59,9 @@ public class BodyDataServiceImpl extends ServiceImpl<BodyDataMapper, BodyData> i
         // 从请求对象中取出参数
         Long id = bodyDataQueryRequest.getId();
         Long userId = bodyDataQueryRequest.getUserId();
-        BigDecimal height_cm = bodyDataQueryRequest.getHeight_cm();
-        BigDecimal weight_kg = bodyDataQueryRequest.getWeight_kg();
-        BigDecimal bmi = bodyDataQueryRequest.getBmi();
+        Integer height_cm = bodyDataQueryRequest.getHeight_cm();
+        Integer weight_kg = bodyDataQueryRequest.getWeight_kg();
+        Double bmi = bodyDataQueryRequest.getBmi();
         Date createTime = bodyDataQueryRequest.getCreateTime();
         Date updateTime = bodyDataQueryRequest.getUpdateTime();
         Integer isDelete = bodyDataQueryRequest.getIsDelete();
@@ -170,6 +131,7 @@ public class BodyDataServiceImpl extends ServiceImpl<BodyDataMapper, BodyData> i
      */
     public BodyData getBodyDataByUserId(Long userId) {
         QueryWrapper<BodyData> queryWrapper = new QueryWrapper<>();
+        System.out.println(queryWrapper);
         queryWrapper.eq("userId", userId);  // 假设数据库中字段名为 userId
         return this.baseMapper.selectOne(queryWrapper);
     }

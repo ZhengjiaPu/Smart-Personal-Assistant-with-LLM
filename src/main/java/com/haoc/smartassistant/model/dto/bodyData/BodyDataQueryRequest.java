@@ -35,17 +35,17 @@ public class BodyDataQueryRequest extends PageRequest implements Serializable {
     /**
      * User height in cm
      */
-    private BigDecimal height_cm;
+    private Integer height_cm;
 
     /**
      * User weight in kg
      */
-    private BigDecimal weight_kg;
+    private Integer weight_kg;
 
     /**
      * Calculated BMI
      */
-    private BigDecimal bmi;
+    private Double bmi;
     /**
      * updateTime
      */

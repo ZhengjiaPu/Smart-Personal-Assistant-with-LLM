@@ -10,18 +10,17 @@ import java.util.Date;
 import lombok.Data;
 
 /**
- * body_data
- * @TableName body_data
+ * health_data
+ * @TableName health_data
  */
-@TableName(value ="body_data")
+@TableName(value ="health_data")
 @Data
-public class BodyData implements Serializable {
+public class HealthData implements Serializable {
     /**
      * id
      */
     @TableId(type = IdType.AUTO)
     private Long id;
-
 
     /**
      * userId
@@ -29,32 +28,62 @@ public class BodyData implements Serializable {
     private Long userId;
 
     /**
-     * User height in cm
+     * 心率数据 (存储为逗号分隔的字符串)
      */
-    private Integer height_cm;
+    private String heartRate;
 
     /**
-     * User weight in kg
+     * 平均心率
      */
-    private Integer weight_kg;
+    private BigDecimal averageHeartRate;
 
     /**
-     * Calculated BMI
+     * 步频
      */
-    private Double bmi;
+    private Integer stepsPerMinute;
 
     /**
-     * createTime
+     * 每日睡眠时长（小时）
+     */
+    private BigDecimal sleepTime;
+
+    /**
+     * 深度睡眠百分比
+     */
+    private BigDecimal deepSleep;
+
+    /**
+     * 浅度睡眠百分比
+     */
+    private BigDecimal lightSleep;
+
+    /**
+     * REM 睡眠百分比
+     */
+    private BigDecimal remSleep;
+
+    /**
+     * 卡路里消耗
+     */
+    private Integer caloriesBurned;
+
+    /**
+     * 医生姓名
+     */
+    private String doctorName;
+
+    /**
+     * 创建时间
      */
     private Date createTime;
 
     /**
-     * updateTime
+     * 更新时间
      */
     private Date updateTime;
 
     /**
-     * isDelete
+     * 删除标志
      */
     private Integer isDelete;
 
@@ -69,9 +98,15 @@ public class BodyData implements Serializable {
         sb.append("Hash = ").append(hashCode());
         sb.append(", id=").append(id);
         sb.append(", userId=").append(userId);
-        sb.append(", height_cm=").append(height_cm);
-        sb.append(", weight_kg=").append(weight_kg);
-        sb.append(", bmi=").append(bmi);
+        sb.append(", heartRate=").append(heartRate);
+        sb.append(", averageHeartRate=").append(averageHeartRate);
+        sb.append(", stepsPerMinute=").append(stepsPerMinute);
+        sb.append(", sleepTime=").append(sleepTime);
+        sb.append(", deepSleep=").append(deepSleep);
+        sb.append(", lightSleep=").append(lightSleep);
+        sb.append(", remSleep=").append(remSleep);
+        sb.append(", caloriesBurned=").append(caloriesBurned);
+        sb.append(", doctorName=").append(doctorName);
         sb.append(", createTime=").append(createTime);
         sb.append(", updateTime=").append(updateTime);
         sb.append(", isDelete=").append(isDelete);

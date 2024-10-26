@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haoc.smartassistant.mapper.HealthDataMapper">
+
+    <!-- 定义 HealthData 实体类的 ResultMap -->
+    <resultMap id="BaseResultMap" type="com.haoc.smartassistant.model.entity.HealthData">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="userId" column="userId" jdbcType="BIGINT"/>
+        <result property="heartRate" column="heartRate" jdbcType="DECIMAL"/>
+        <result property="sleepTime" column="sleepTime" jdbcType="DECIMAL"/>
+        <result property="stepsPerMinute" column="stepsPerMinute" jdbcType="DECIMAL"/>
+        <result property="caloriesBurned" column="caloriesBurned" jdbcType="DECIMAL"/>
+        <result property="sleepQuality" column="sleepQuality" jdbcType="VARCHAR"/>
+        <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+        <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <!-- 列表选择 -->
+    <sql id="Base_Column_List">
+        id, userId, heartRate, sleepTime, stepsPerMinute, caloriesBurned,
+        sleepQuality, createTime, updateTime, isDelete
+    </sql>
+
+    <!-- 其他查询、插入、更新、删除操作可以根据需求进行定义 -->
+</mapper>

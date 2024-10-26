@@ -1,6 +1,7 @@
 package com.haoc.smartassistant.aiservices;
 
 import dev.langchain4j.service.SystemMessage;
+import dev.langchain4j.service.UserMessage;
 import dev.langchain4j.service.spring.AiService;
 import reactor.core.publisher.Flux;
 
@@ -20,5 +21,5 @@ public interface StreamingDietPlanningAIService {
             The user has provided feedback to adjust their diet plan. Please consider the user's request and preferences
             and return an updated meal plan that reflects these adjustments.
             """)
-    public Flux<String> adjustDietPlan(String userBodyData, String adjustmentCommand);
+    public Flux<String> adjustDietPlan(String adjustmentCommand);
 }

@@ -8,21 +8,32 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.haoc.smartassistant.common.ErrorCode;
 import com.haoc.smartassistant.constant.CommonConstant;
 import com.haoc.smartassistant.exception.BusinessException;
+import com.haoc.smartassistant.mapper.BodyDataMapper;
 import com.haoc.smartassistant.mapper.UserMapper;
 import com.haoc.smartassistant.model.dto.user.UserQueryRequest;
+import com.haoc.smartassistant.model.entity.BodyData;
 import com.haoc.smartassistant.model.entity.User;
 import com.haoc.smartassistant.model.enums.UserRoleEnum;
 import com.haoc.smartassistant.model.vo.LoginUserVO;
 import com.haoc.smartassistant.model.vo.UserVO;
+import com.haoc.smartassistant.service.BodyDataService;
 import com.haoc.smartassistant.service.UserService;
 import com.haoc.smartassistant.utils.SqlUtils;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
+
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
@@ -35,6 +46,8 @@ import org.springframework.util.DigestUtils;
 @Slf4j
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
+    @Resource
+    BodyDataService bodyDataService;
     /**
      * 盐值，混淆密码
      */
@@ -64,6 +77,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             if (count > 0) {
                 throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号重复");
             }
+
             // 2. 加密
             String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
             // 3. 插入数据
@@ -75,6 +89,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             if (!saveResult) {
                 throw new BusinessException(ErrorCode.SYSTEM_ERROR, "注册失败，数据库错误");
             }
+
             return user.getId();
         }
     }

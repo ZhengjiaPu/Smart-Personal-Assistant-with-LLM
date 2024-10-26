@@ -15,13 +15,6 @@ import jakarta.servlet.http.HttpServletRequest;
  */
 public interface BodyDataService extends IService<BodyData> {
 
-    /**
-     * 校验数据
-     *
-     * @param bodyData
-     * @param add 对创建的数据进行校验
-     */
-    void validBodyData(BodyData bodyData, boolean add);
 
     /**
      * 获取查询条件

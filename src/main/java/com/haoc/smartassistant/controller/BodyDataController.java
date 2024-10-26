@@ -2,6 +2,7 @@ package com.haoc.smartassistant.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.haoc.smartassistant.aiservices.DietPlanningAIService;
+import com.haoc.smartassistant.aiservices.RecommendedMusicAIService;
 import com.haoc.smartassistant.aiservices.StreamingDietPlanningAIService;
 import com.haoc.smartassistant.annotation.AuthCheck;
 import com.haoc.smartassistant.common.BaseResponse;
@@ -12,6 +13,7 @@ import com.haoc.smartassistant.constant.UserConstant;
 import com.haoc.smartassistant.exception.BusinessException;
 import com.haoc.smartassistant.exception.ThrowUtils;
 import com.haoc.smartassistant.model.dto.bodyData.BodyDataAddRequest;
+import com.haoc.smartassistant.model.dto.bodyData.BodyDataAiRequest;
 import com.haoc.smartassistant.model.dto.bodyData.BodyDataQueryRequest;
 import com.haoc.smartassistant.model.dto.bodyData.BodyDataUpdateRequest;
 import com.haoc.smartassistant.model.entity.BodyData;
@@ -48,6 +50,8 @@ public class BodyDataController {
 
     @Autowired
     private StreamingDietPlanningAIService streamingDietPlanningAIService;
+    @Autowired
+    private RecommendedMusicAIService recommendedMusicAIService;
 
     // region 增删改查
 
@@ -55,85 +59,26 @@ public class BodyDataController {
      * 创建bodyData
      *
      * @param bodyDataAddRequest
-     * @param request
      * @return
      */
-    @PostMapping("/add")
-    public BaseResponse<Long> addBodyData(@RequestBody BodyDataAddRequest bodyDataAddRequest, HttpServletRequest request) {
+    public Long addBodyData(@RequestBody BodyDataAddRequest bodyDataAddRequest,Long userId) {
         ThrowUtils.throwIf(bodyDataAddRequest == null, ErrorCode.PARAMS_ERROR);
         // todo 在此处将实体类和 DTO 进行转换
         BodyData bodyData = new BodyData();
         BeanUtils.copyProperties(bodyDataAddRequest, bodyData);
-        // 数据校验
-        bodyDataService.validBodyData(bodyData, true);
+
         // todo 填充默认值
-        User loginUser = userService.getLoginUser(request);
-        bodyData.setUserId(loginUser.getId());
+
+        bodyData.setUserId(userId);
         // 写入数据库
         boolean result = bodyDataService.save(bodyData);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         // 返回新写入的数据 id
         long newBodyDataId = bodyData.getId();
-        return ResultUtils.success(newBodyDataId);
+        return newBodyDataId;
     }
 
-    /**
-     * 删除bodyData
-     *
-     * @param deleteRequest
-     * @param request
-     * @return
-     */
-    @PostMapping("/delete")
-    public BaseResponse<Boolean> deleteBodyData(@RequestBody DeleteRequest deleteRequest, HttpServletRequest request) {
-        if (deleteRequest == null || deleteRequest.getId() <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        User user = userService.getLoginUser(request);
-        long id = deleteRequest.getId();
-        // 判断是否存在
-        BodyData oldBodyData = bodyDataService.getById(id);
-        ThrowUtils.throwIf(oldBodyData == null, ErrorCode.NOT_FOUND_ERROR);
-        // 仅本人或管理员可删除
-        if (!oldBodyData.getUserId().equals(user.getId()) && !userService.isAdmin(request)) {
-            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
-        }
-        // 操作数据库
-        boolean result = bodyDataService.removeById(id);
-        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
-        return ResultUtils.success(true);
-    }
 
-    /**
-     * 更新bodyData（仅本人或管理员）
-     *
-     * @param bodyDataUpdateRequest
-     * @return
-     */
-    @PostMapping("/update")
-    public BaseResponse<Boolean> updateBodyData(@RequestBody BodyDataUpdateRequest bodyDataUpdateRequest, HttpServletRequest request) {
-        if (bodyDataUpdateRequest == null || bodyDataUpdateRequest.getId() <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        User user = userService.getLoginUser(request);
-        // todo 在此处将实体类和 DTO 进行转换
-        BodyData bodyData = new BodyData();
-        BeanUtils.copyProperties(bodyDataUpdateRequest, bodyData);
-        // 数据校验
-        bodyDataService.validBodyData(bodyData, false);
-        // 判断是否存在
-        long id = bodyDataUpdateRequest.getId();
-        BodyData oldBodyData = bodyDataService.getById(id);
-        ThrowUtils.throwIf(oldBodyData == null, ErrorCode.NOT_FOUND_ERROR);
-        // 仅本人或管理员可更新
-        if (!oldBodyData.getUserId().equals(user.getId()) && !userService.isAdmin(request)) {
-            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
-        }
-        // 操作数据库
-        boolean result = bodyDataService.updateById(bodyData);
-        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
-        return ResultUtils.success(true);
-    }
 
     /**
      * 根据 id 获取bodyData（封装类）
@@ -214,14 +159,15 @@ public class BodyDataController {
         return ResultUtils.success(bodyDataService.getBodyDataVOPage(bodyDataPage, request));
     }
 
-    // AI - Methods
+    // AI Methods for Automatic Meal and Diet Planning
     /**
      * Generate diet plan based on the user's body data
-     * @param userId ID of the user
+     * @param userId
      * @return Stream of DietPlanVO objects
      */
     @GetMapping("/generate-diet-plan/{userId}")
     public Flux<String> generateDietPlan(@PathVariable Long userId) {
+
         ThrowUtils.throwIf(userId <= 0, ErrorCode.PARAMS_ERROR);
         BodyData bodyData = bodyDataService.getBodyDataByUserId(userId);
         ThrowUtils.throwIf(bodyData == null, ErrorCode.NOT_FOUND_ERROR);
@@ -231,16 +177,43 @@ public class BodyDataController {
 
     /**
      * Adjust diet plan based on user feedback
-     * @param userId ID of the user
-     * @param adjustmentCommand Feedback or adjustment command from the user
+     * @param bodyDataAiRequest include user id and adjustmentCommand
      * @return Stream of updated DietPlanVO objects
      */
-    @PostMapping("/adjust-diet-plan/{userId}")
-    public Flux<String> adjustDietPlan(@PathVariable Long userId, @RequestBody String adjustmentCommand) {
+    @PostMapping("/adjust-diet-plan/")
+    public Flux<String> adjustDietPlan(@RequestBody BodyDataAiRequest bodyDataAiRequest) {
+        Long userId = bodyDataAiRequest.getUserID();
+        String adjustmentCommand = bodyDataAiRequest.getAdjustmentCommand();
         ThrowUtils.throwIf(userId <= 0, ErrorCode.PARAMS_ERROR);
         BodyData bodyData = bodyDataService.getBodyDataByUserId(userId);
         ThrowUtils.throwIf(bodyData == null, ErrorCode.NOT_FOUND_ERROR);
-        return streamingDietPlanningAIService.adjustDietPlan(bodyData.toString(), adjustmentCommand);
+        return streamingDietPlanningAIService.adjustDietPlan(adjustmentCommand);
     }
+
+    // AI Methods for Mood-Based Music Recommendations
+    /**
+     * get AI Recommended Music based on mood and body data
+     * @param userId
+     * @return Stream of DietPlanVO objects
+     */
+    @GetMapping("/recommend/{userId}")
+    public String getAIRecommendedMusic(@PathVariable Long userId, @RequestParam String mood) {
+        ThrowUtils.throwIf(userId <= 0, ErrorCode.PARAMS_ERROR);
+        ThrowUtils.throwIf(mood== null, ErrorCode.PARAMS_ERROR);
+
+
+        BodyData bodyData = bodyDataService.getBodyDataByUserId(userId);
+
+//        // user doesn't have body data information
+//        if (bodyData == null){
+//            log.info("Given user doesn't have body data information");
+//            return recommendedMusicAIService.generateRecommendedMusic(null, mood);
+//        }
+
+        System.out.println("mood    ---------- "+mood);
+        return recommendedMusicAIService.generateRecommendedMusic(bodyData.toString(),mood);
+    }
+
+
     // endregion
 }
