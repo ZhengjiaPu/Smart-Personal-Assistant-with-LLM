@@ -22,7 +22,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/spa_db
     username: root
-    password: ch1028390030
+    password: 1234
   # Redis 配置
   # todo 需替换配置，然后取消注释
 #  redis:
@@ -107,3 +107,9 @@ knife4j:
   setting:
     language: zh_cn
 
+aws:
+  s3:
+    access-key: AKIA3M7AC6O2OZK4DAEH
+    secret-key: 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
+    region: ap-southeast-2
+    bucket-name: avatar-bucket-elec5620
