@@ -1,5 +1,6 @@
 package com.haoc.smartassistant.controller;
 
+import com.haoc.smartassistant.aiservices.HealthReportAIService;
 import com.haoc.smartassistant.model.entity.HealthData;
 import com.haoc.smartassistant.service.HealthDataService;
 import com.haoc.smartassistant.service.UserService;
@@ -15,6 +16,8 @@ import com.haoc.smartassistant.model.vo.HealthDataVO;
 
 
 import jakarta.servlet.http.HttpServletRequest;
+import reactor.core.publisher.Flux;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,5 +51,23 @@ public class HealthDataController {
 
         // 返回封装的健康数据对象
         return ResultUtils.success(healthDataService.getHealthDataVO(healthData));
+    }
+    @Autowired
+    private HealthReportAIService HealthReportAIService;
+    /**
+     * Generate health report based on the user's health data
+     * @param userId The ID of the user for whom to generate the health report.
+     * @return Stream of Health Report as Strings.
+     */
+    @GetMapping("/generate-health-report/{userId}")
+    public String generateHealthReport(@PathVariable Long userId) {
+        ThrowUtils.throwIf(userId <= 0, ErrorCode.PARAMS_ERROR);
+
+        HealthData healthData = healthDataService.getByUserId(userId);
+        ThrowUtils.throwIf(healthData == null, ErrorCode.NOT_FOUND_ERROR);
+
+        log.info("healthData ---------- " + healthData);
+
+        return HealthReportAIService.generateHealthReport(healthData.toString());
     }
 }
