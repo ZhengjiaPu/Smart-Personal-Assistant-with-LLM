@@ -8,6 +8,7 @@ import com.haoc.smartassistant.common.ErrorCode;
 import com.haoc.smartassistant.constant.CommonConstant;
 import com.haoc.smartassistant.exception.ThrowUtils;
 import com.haoc.smartassistant.mapper.SchedulesMapper;
+import com.haoc.smartassistant.model.dto.schedules.SchedulesAddRequest;
 import com.haoc.smartassistant.model.dto.schedules.SchedulesQueryRequest;
 import com.haoc.smartassistant.model.entity.Schedules;
 
@@ -24,11 +25,15 @@ import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import java.time.LocalDateTime;
 
 /**
  * schedules服务实现
@@ -191,5 +196,46 @@ public class SchedulesServiceImpl extends ServiceImpl<SchedulesMapper, Schedules
         schedulesVOPage.setRecords(schedulesVOList);
         return schedulesVOPage;
     }
+
+    @Override
+    public List<Schedules> getSchedulesByUserIdAndDateRange(Long userId, LocalDateTime startTime, LocalDateTime endTime) {
+        QueryWrapper<Schedules> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("userId", userId)
+                .ge("createTime", startTime)
+                .le("createTime", endTime)
+                .eq("isDelete", 0);  // 仅获取未删除的记录
+        return this.list(queryWrapper);
+    }
+
+
+
+    @Override
+    public boolean addSchedulesFromAI(SchedulesAddRequest schedulesDto) {
+        Schedules schedules = new Schedules();
+        // 将DTO的字段赋值到实体类
+        schedules.setTitle(schedulesDto.getTitle());
+        schedules.setContent(schedulesDto.getContent());
+        schedules.setUserId(schedulesDto.getUserId());
+        schedules.setStartTime(schedulesDto.getStartTime());
+        schedules.setEndTime(schedulesDto.getEndTime());
+        schedules.setCreateTime(LocalDateTime.now());      // 设置创建时间为当前时间
+        schedules.setUpdateTime(LocalDateTime.now());      // 设置更新时间
+        schedules.setIsDelete(0);  // 默认未删除
+
+        // 保存标签（如果tags字段需要保存到数据库，可以在此添加相关逻辑）
+        // 例如：保存tags到一个关联表或转换为字符串存储到schedules的一个字段中
+
+        return this.save(schedules);
+    }
+
+
+        @Override
+        public List<Schedules> getSchedulesByUserId(Long userId) {
+            QueryWrapper<Schedules> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("userId", userId).eq("isDelete", 0); // 获取未删除的记录
+            return this.list(queryWrapper);
+        }
+
+
 
 }

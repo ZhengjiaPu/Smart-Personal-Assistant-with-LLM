@@ -1,14 +1,11 @@
 package com.haoc.smartassistant.model.dto.schedules;
 
 import lombok.Data;
-
 import java.io.Serializable;
-import java.util.List;
+import java.time.LocalDateTime;
 
 /**
  * 编辑schedules请求
- *
- *
  */
 @Data
 public class SchedulesEditRequest implements Serializable {
@@ -28,7 +25,15 @@ public class SchedulesEditRequest implements Serializable {
      */
     private String content;
 
+    /**
+     * 开始时间
+     */
+    private LocalDateTime startTime;
 
+    /**
+     * 结束时间
+     */
+    private LocalDateTime endTime;
 
     private static final long serialVersionUID = 1L;
 }

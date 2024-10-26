@@ -17,10 +17,10 @@ SELECT id INTO @user3Id FROM user WHERE userAccount = 'user3' LIMIT 1;
 -- 插入 body_data 数据
 INSERT INTO body_data (userId, height_cm, weight_kg, createTime, updateTime)
 VALUES
-    (1845693955367346178, 175.00, 70.00, NOW(), NOW()),  -- Admin 用户的 body_data
-    (1845693955367346179, 180.00, 85.00, NOW(), NOW()),  -- user1 的 body_data
-    (1845693955367346180, 165.00, 60.00, NOW(), NOW()),  -- user2 的 body_data
-    (1845693955367346181, 170.00, 75.00, NOW(), NOW());  -- user3 的 body_data
+    (1, 175.00, 70.00, NOW(), NOW()),  -- Admin 用户的 body_data
+    (2, 180.00, 85.00, NOW(), NOW()),  -- user1 的 body_data
+    (3, 165.00, 60.00, NOW(), NOW()),  -- user2 的 body_data
+    (4, 170.00, 75.00, NOW(), NOW());  -- user3 的 body_data
 
 -- 插入 Health Monitoring Data
 INSERT INTO health_data (userId, heartRate, averageHeartRate, stepsPerMinute, sleepTime, deepSleep, lightSleep, remSleep, caloriesBurned, doctorName, createTime, updateTime)
@@ -33,3 +33,10 @@ VALUES
     (@user1Id, 'Paracetamol', '1 times/day', '08:00:00'),
     (@user1Id, 'Ibuprofen', '1 time/day', '12:00:00'),
     (@user1Id, 'Vitamin C', '1 time/day', '18:00:00');
+
+INSERT INTO schedules (content, title, userId, createTime, updateTime, startTime, endTime, isDelete) VALUES
+     ('Complete project report', 'Work', 1, '2024-10-25 08:00:00', '2024-10-25 08:00:00', '2024-10-25 09:00:00', '2024-10-25 10:30:00', 0),
+     ('Go to the gym', 'Exercise', 1, '2024-10-25 08:00:00', '2024-10-25 08:00:00', '2024-10-25 18:00:00', '2024-10-25 19:00:00', 0),
+     ('Doctor appointment', 'Health', 2, '2024-10-25 08:00:00', '2024-10-25 08:00:00', '2024-10-25 14:00:00', '2024-10-25 15:00:00', 0),
+     ('Dinner with friends', 'Leisure', 1, '2024-10-25 08:00:00', '2024-10-25 08:00:00', '2024-10-25 20:00:00', '2024-10-25 22:00:00', 0),
+     ('Read a book', 'Personal Development', 3, '2024-10-25 08:00:00', '2024-10-25 08:00:00', '2024-10-25 15:00:00', '2024-10-25 16:00:00', 0);

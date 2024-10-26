@@ -1,36 +1,15 @@
 # Smart-Personal-Assistant-with-LLM
 
 ## How to Run the Project
+1. **preparation: docker**, docker compose in your environment
 
-1. **Clone the repository** to your local machine
+2. **Clone the repository** to your local machine
 
-2. **Install maven dependency ** : run `mvn clean install` in you terminal
-
-   ```bash
-   mvn clean install
-   ```
-
-   
-
-3. **Modify the configuration file**: Update the database credentials in `application.ym`l:
-
-```yml
-# path of application.yml : src/main/resources/application.yml
-
-datasource:
-  driver-class-name: com.mysql.cj.jdbc.Driver
-  url: jdbc:mysql://localhost:3306/spa_db
-  username: your-database-username
-  password: your-database-password
-
-```
-
-3. **Run sql** to create database and insert test data
-
-Path : 
-
-- sql/create_table.sql
-- sql/create_test_data.sql
+3. **docker ** : run `docker-compose up --build` , it will:
+   - Build and start the Spring Boot application container (smartpersonalai) and the MySQL container.
+   - The database is automatically created when the MySQL container starts and the table structure and data are initialized based on the mounted SQL files.
+   - Upon startup, the Spring Boot application connects to the MySQL database.
+   - The Spring Boot application exposes the API on port 8101 and the MySQL database listens on port 3306 (in Docker networks only).
 
 4. **OpenAI API Key Configuration**
 
@@ -110,4 +89,6 @@ Here is a sample diet plan for you:
 
 Remember, it's essential to consult with a healthcare provider or a nutritionist before making significant changes to your diet or exercise routine. This plan is a general guideline and can be adjusted based on your specific needs and preferences. Good luck on your weight loss journey!
 ```
+
+
 

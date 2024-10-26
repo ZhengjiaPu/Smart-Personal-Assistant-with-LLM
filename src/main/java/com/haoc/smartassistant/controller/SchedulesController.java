@@ -1,6 +1,7 @@
 package com.haoc.smartassistant.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.haoc.smartassistant.aiservices.TimeManagementAIService;
 import com.haoc.smartassistant.annotation.AuthCheck;
 import com.haoc.smartassistant.common.BaseResponse;
 import com.haoc.smartassistant.common.DeleteRequest;
@@ -13,9 +14,13 @@ import com.haoc.smartassistant.model.dto.schedules.SchedulesAddRequest;
 import com.haoc.smartassistant.model.dto.schedules.SchedulesEditRequest;
 import com.haoc.smartassistant.model.dto.schedules.SchedulesQueryRequest;
 import com.haoc.smartassistant.model.dto.schedules.SchedulesUpdateRequest;
+import com.haoc.smartassistant.model.entity.BodyData;
+import com.haoc.smartassistant.model.entity.HealthData;
 import com.haoc.smartassistant.model.entity.Schedules;
 import com.haoc.smartassistant.model.entity.User;
 import com.haoc.smartassistant.model.vo.SchedulesVO;
+import com.haoc.smartassistant.service.BodyDataService;
+import com.haoc.smartassistant.service.HealthDataService;
 import com.haoc.smartassistant.service.SchedulesService;
 import com.haoc.smartassistant.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +29,9 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import reactor.core.publisher.Flux;
+
+import java.util.List;
 
 /**
  * schedules接口
@@ -39,6 +47,15 @@ public class SchedulesController {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private TimeManagementAIService timeManagementAIService;
+
+    @Resource
+    private BodyDataService bodyDataService;
+
+    @Resource
+    private HealthDataService healthDataService;
 
     // region 增删改查
 
@@ -202,7 +219,7 @@ public class SchedulesController {
     }
 
     /**
-     * 编辑schedules（给用户使用）
+     * compiler schedules（for users）
      *
      * @param schedulesEditRequest
      * @param request
@@ -213,25 +230,78 @@ public class SchedulesController {
         if (schedulesEditRequest == null || schedulesEditRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        // todo 在此处将实体类和 DTO 进行转换
+        // todo converts entity classes and DTOs here
         Schedules schedules = new Schedules();
         BeanUtils.copyProperties(schedulesEditRequest, schedules);
-        // 数据校验
+        // data verification
         schedulesService.validSchedules(schedules, false);
         User loginUser = userService.getLoginUser(request);
-        // 判断是否存在
+        // if exist
         long id = schedulesEditRequest.getId();
         Schedules oldSchedules = schedulesService.getById(id);
         ThrowUtils.throwIf(oldSchedules == null, ErrorCode.NOT_FOUND_ERROR);
-        // 仅本人或管理员可编辑
+        // Editable by me or administrator only
         if (!oldSchedules.getUserId().equals(loginUser.getId()) && !userService.isAdmin(loginUser)) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
-        // 操作数据库
+        // Operational databases
         boolean result = schedulesService.updateById(schedules);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(true);
     }
 
     // endregion
+
+    /**
+     *
+     * @param request
+     * @return
+     */
+    @GetMapping("/summary")
+    public Flux<String> getDailySummary(HttpServletRequest request) {
+        // Get current logged in user
+        User loginUser = userService.getLoginUser(request);
+        Long userId = loginUser.getId();
+
+        // Obtain user's schedule, body data, health data and medication plan from database
+        List<Schedules> schedules = schedulesService.getSchedulesByUserId(userId); // Getting the user's schedule
+        BodyData bodyData = bodyDataService.getBodyDataByUserId(userId); // Access to user body data
+        HealthData healthData = healthDataService.getByUserId(userId); // Access to user health data
+
+        // Integration of user data
+        String userActivityData = summarizeUserData(schedules, bodyData, healthData);
+
+        // Calling AI services to generate daily summaries
+        return timeManagementAIService.generateDailySummary(userActivityData);
+    }
+
+
+    private String summarizeUserData(List<Schedules> schedules, BodyData bodyData, HealthData healthData) {
+        StringBuilder summaryBuilder = new StringBuilder();
+
+        // Add schedule information
+        summaryBuilder.append("Schedules: ");
+        schedules.forEach(schedule -> {
+            summaryBuilder.append(String.format("Title: %s, Content: %s, Start: %s, End: %s; ",
+                    schedule.getTitle(), schedule.getContent(), schedule.getStartTime(), schedule.getEndTime()));
+        });
+
+        // Add body data
+        if (bodyData != null) {
+            summaryBuilder.append(String.format("Body Data - Height: %d cm, Weight: %d kg, BMI: %.2f; ",
+                    bodyData.getHeight_cm(), bodyData.getWeight_kg(), bodyData.getBmi()));
+        }
+
+        // Add Health Data
+        if (healthData != null) {
+            summaryBuilder.append(String.format("Health Data - Average Heart Rate: %.2f BPM, Steps Per Minute: %d, Sleep Time: %.2f hours, Calories Burned: %d; ",
+                    healthData.getAverageHeartRate(), healthData.getStepsPerMinute(), healthData.getSleepTime(), healthData.getCaloriesBurned()));
+
+            summaryBuilder.append("Sleep Quality - ");
+            summaryBuilder.append(String.format("Deep Sleep: %.2f%%, Light Sleep: %.2f%%, REM Sleep: %.2f%%; ",
+                    healthData.getDeepSleep(), healthData.getLightSleep(), healthData.getRemSleep()));
+        }
+
+        return summaryBuilder.toString();
+    }
 }

@@ -37,16 +37,18 @@ create table if not exists report
 ) comment 'report' collate = utf8mb4_unicode_ci;
 
 -- Schedules表
-create table if not exists schedules
-(
-    id         bigint auto_increment comment 'id' primary key,
-    content    text                               null comment 'content',
-    userId     bigint                             not null comment 'userId',
-    createTime datetime default CURRENT_TIMESTAMP not null comment 'createTime',
-    updateTime datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updateTime',
-    isDelete   tinyint  default 0                 not null comment 'isDelete',
-    index idx_userId (userId)
-) comment 'report' collate = utf8mb4_unicode_ci;
+CREATE TABLE IF NOT EXISTS schedules (
+                                         id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT 'ID',
+                                         content TEXT COMMENT 'Schedule content',
+                                         title VARCHAR(255) COMMENT 'Title of the schedule',
+                                         userId BIGINT NOT NULL COMMENT 'User ID',
+                                         createTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Creation time',
+                                         updateTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Update time',
+                                         startTime TIMESTAMP COMMENT 'Start time of the schedule',
+                                         endTime TIMESTAMP COMMENT 'End time of the schedule',
+                                         isDelete TINYINT DEFAULT 0 COMMENT 'Soft delete flag (0 = active, 1 = deleted)',
+                                         INDEX idx_userId (userId)
+) COMMENT='Schedules table' COLLATE = utf8mb4_unicode_ci;
 
 -- Body Data表
 create table if not exists body_data
