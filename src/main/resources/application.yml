@@ -22,7 +22,10 @@ spring:
   # todo 需替换配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
+    #if you use docker
     url: jdbc:mysql://mysql:3306/spa_db
+    #if run at localhost
+    #url: jdbc:mysql://localhost:3306/spa_db
     username: root
     password: 1234
   # Redis 配置
@@ -50,9 +53,9 @@ langchain4j:
   open-ai:
     chat-model:
       api-key: ${OPENAI_API_KEY}
-      model-name: gpt-3.5-turbo          # 使用的模型名称
+      model-name: gpt-3.5-turbo        # 使用的模型名称
       strict-tools: true               # 严格的工具配置
-      temperature: 0.0                 # 模型的温度参数
+      temperature: 0.2                 # 模型的温度参数
       timeout: PT60S                   # 请求超时时间
       log-requests: false              # 是否记录请求日志
       log-responses: false             # 是否记录响应日志

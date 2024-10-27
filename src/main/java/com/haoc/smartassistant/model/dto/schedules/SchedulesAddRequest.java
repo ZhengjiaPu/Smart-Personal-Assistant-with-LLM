@@ -3,6 +3,7 @@ package com.haoc.smartassistant.model.dto.schedules;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.joda.time.DateTime;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -34,12 +35,12 @@ public class SchedulesAddRequest implements Serializable {
     /**
      * 开始时间
      */
-    private LocalDateTime startTime;
+    private String startTime;
 
     /**
      * 结束时间
      */
-    private LocalDateTime endTime;
+    private String endTime;
 
     /**
      * 用户ID

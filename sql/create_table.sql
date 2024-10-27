@@ -44,8 +44,8 @@ CREATE TABLE IF NOT EXISTS schedules (
                                          userId BIGINT NOT NULL COMMENT 'User ID',
                                          createTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Creation time',
                                          updateTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Update time',
-                                         startTime TIMESTAMP COMMENT 'Start time of the schedule',
-                                         endTime TIMESTAMP COMMENT 'End time of the schedule',
+                                         startTime VARCHAR(255) COMMENT 'Start time of the schedule',
+                                         endTime VARCHAR(255) COMMENT 'End time of the schedule',
                                          isDelete TINYINT DEFAULT 0 COMMENT 'Soft delete flag (0 = active, 1 = deleted)',
                                          INDEX idx_userId (userId)
 ) COMMENT='Schedules table' COLLATE = utf8mb4_unicode_ci;

@@ -8,6 +8,7 @@ import java.util.Date;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.joda.time.DateTime;
 
 /**
  * report
@@ -51,12 +52,12 @@ public class Schedules implements Serializable {
     /**
      * startTime
      */
-    private LocalDateTime startTime;
+    private String startTime;
 
     /**
      * endTime
      */
-    private LocalDateTime endTime;
+    private String endTime;
 
     /**
      * isDelete

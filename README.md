@@ -23,7 +23,8 @@
    - Upon startup, the Spring Boot application connects to the MySQL database.
 
    - The Spring Boot application exposes the API on port 8101 and the MySQL database listens on port 3306 (in Docker networks only).
-
+   - If you want to restart java app in docker: use dockerDeskTop
+     
 4. **OpenAI API Key Configuration**
 
 The OpenAI API key is stored in the `.env` file. The project uses `Langchain4j` to integrate the GPT-3.5 Turbo model. 

@@ -1,6 +1,8 @@
 package com.haoc.smartassistant.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.haoc.smartassistant.aiservices.SmartNotificationAIService;
 import com.haoc.smartassistant.aiservices.TimeManagementAIService;
 import com.haoc.smartassistant.annotation.AuthCheck;
 import com.haoc.smartassistant.common.BaseResponse;
@@ -23,14 +25,28 @@ import com.haoc.smartassistant.service.BodyDataService;
 import com.haoc.smartassistant.service.HealthDataService;
 import com.haoc.smartassistant.service.SchedulesService;
 import com.haoc.smartassistant.service.UserService;
+
+import dev.langchain4j.service.UserMessage;
+import dev.langchain4j.service.V;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+
 
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import reactor.core.publisher.Flux;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -52,11 +68,16 @@ public class SchedulesController {
     private TimeManagementAIService timeManagementAIService;
 
     @Resource
+    private SmartNotificationAIService smartNotificationAIService;
+
+    @Resource
     private BodyDataService bodyDataService;
 
     @Resource
     private HealthDataService healthDataService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
+    private static final Logger logger = LoggerFactory.getLogger(SchedulesController.class);
     // region 增删改查
 
     /**
@@ -253,55 +274,91 @@ public class SchedulesController {
     // endregion
 
     /**
+     * Get the daily summary report for a specified user.
      *
-     * @param request
-     * @return
+     * @param userId  ID of the user
+     * @return ResponseEntity with the summary report or an error message.
      */
-    @GetMapping("/summary")
-    public Flux<String> getDailySummary(HttpServletRequest request) {
-        // Get current logged in user
-        User loginUser = userService.getLoginUser(request);
-        Long userId = loginUser.getId();
+    @GetMapping(value = "/summary", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> getDailySummary(@RequestParam("userId") Long userId) {
+        try {
+            // Check if user exists
+            User loginUser = userService.getById(userId);
+            if (loginUser == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"message\": \"User not found.\"}");
+            }
 
-        // Obtain user's schedule, body data, health data and medication plan from database
-        List<Schedules> schedules = schedulesService.getSchedulesByUserId(userId); // Getting the user's schedule
-        BodyData bodyData = bodyDataService.getBodyDataByUserId(userId); // Access to user body data
-        HealthData healthData = healthDataService.getByUserId(userId); // Access to user health data
 
-        // Integration of user data
-        String userActivityData = summarizeUserData(schedules, bodyData, healthData);
+            // Summarize user data
+            String userActivityData = userService.summarizeUserData(userId);
 
-        // Calling AI services to generate daily summaries
-        return timeManagementAIService.generateDailySummary(userActivityData);
+            // Generate and return summary via AI service
+            String dailySummary = timeManagementAIService.generateDailySummary(userActivityData);
+
+            // Construct JSON response
+            String jsonResponse = "{\"summary\": \"" + dailySummary + "\"}";
+
+            // Set response headers
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
+
+            return ResponseEntity.ok().headers(headers).body(dailySummary);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"message\": \"Error generating daily summary: " + e.getMessage() + "\"}");
+        }
     }
 
 
-    private String summarizeUserData(List<Schedules> schedules, BodyData bodyData, HealthData healthData) {
-        StringBuilder summaryBuilder = new StringBuilder();
 
-        // Add schedule information
-        summaryBuilder.append("Schedules: ");
-        schedules.forEach(schedule -> {
-            summaryBuilder.append(String.format("Title: %s, Content: %s, Start: %s, End: %s; ",
-                    schedule.getTitle(), schedule.getContent(), schedule.getStartTime(), schedule.getEndTime()));
-        });
 
-        // Add body data
-        if (bodyData != null) {
-            summaryBuilder.append(String.format("Body Data - Height: %d cm, Weight: %d kg, BMI: %.2f; ",
-                    bodyData.getHeight_cm(), bodyData.getWeight_kg(), bodyData.getBmi()));
+    /**
+     * Generates a new schedule based on input user ID and message, and stores it in the database.
+     *
+     * @param userId    the ID of the user for whom the schedule is created
+     * @param message   the input message describing the schedule details
+     * @return the created Schedules entity
+     */
+    @GetMapping("/create-schedule")
+    public ResponseEntity<BaseResponse<Schedules>> createSchedule(
+            @RequestParam Long userId,
+            @RequestParam String message) {
+        try {
+            // Log the received request details
+            logger.info("Received createSchedule request - userId: {}, message: {}", userId, message);
+
+            String prompt = "userId:" + userId.toString() + ", message:"+ message ;
+
+            String scheduleJson = timeManagementAIService.createNewSchedule(userId, message);
+
+            // Log AI response
+            logger.info("The scheduleJson AI response: {}", scheduleJson);
+
+            // Parse the JSON string to a SchedulesAddRequest object
+            Schedules newSchedule = objectMapper.readValue(scheduleJson, Schedules.class);
+
+
+            logger.info("New schedule entity schedules before saving: {}", newSchedule);
+
+
+            // Save and retrieve the stored schedule with generated ID
+            Boolean isSaved = schedulesService.addSchedulesFromAI(newSchedule);
+
+            if (isSaved) {
+                logger.info("New schedule entity after saving: {}", newSchedule);
+            }
+
+            // Return success response with the stored schedule entity
+            return ResponseEntity.ok(ResultUtils.success(newSchedule));
+
+        } catch (IOException e) {
+            logger.error("Failed to parse schedule JSON", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ResultUtils.error(ErrorCode.valueOf("Error generating schedule: " + e.getMessage())));
         }
-
-        // Add Health Data
-        if (healthData != null) {
-            summaryBuilder.append(String.format("Health Data - Average Heart Rate: %.2f BPM, Steps Per Minute: %d, Sleep Time: %.2f hours, Calories Burned: %d; ",
-                    healthData.getAverageHeartRate(), healthData.getStepsPerMinute(), healthData.getSleepTime(), healthData.getCaloriesBurned()));
-
-            summaryBuilder.append("Sleep Quality - ");
-            summaryBuilder.append(String.format("Deep Sleep: %.2f%%, Light Sleep: %.2f%%, REM Sleep: %.2f%%; ",
-                    healthData.getDeepSleep(), healthData.getLightSleep(), healthData.getRemSleep()));
-        }
-
-        return summaryBuilder.toString();
     }
+
 }

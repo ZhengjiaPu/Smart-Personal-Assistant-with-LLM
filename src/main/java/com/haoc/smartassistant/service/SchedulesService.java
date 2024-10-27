@@ -65,10 +65,10 @@ public interface SchedulesService extends IService<Schedules> {
     /**
      * 添加由AI生成的日程数据
      *
-     * @param schedulesDto
+     * @param schedules
      * @return
      */
-    boolean addSchedulesFromAI(SchedulesAddRequest schedulesDto);
+    boolean addSchedulesFromAI(Schedules schedules);
 
     /**
      * 根据用户ID获取用户的所有日程

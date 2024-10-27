@@ -3,6 +3,8 @@ package com.haoc.smartassistant.model.dto.schedules;
 import com.haoc.smartassistant.common.PageRequest;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.joda.time.DateTime;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -47,12 +49,12 @@ public class SchedulesQueryRequest extends PageRequest implements Serializable {
     /**
      * 开始时间
      */
-    private LocalDateTime startTime;
+    private String startTime;
 
     /**
      * 结束时间
      */
-    private LocalDateTime endTime;
+    private String endTime;
 
     /**
      * 是否删除

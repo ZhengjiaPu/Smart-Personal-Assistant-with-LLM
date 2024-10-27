@@ -11,8 +11,8 @@
         <result property="userId" column="userId" jdbcType="BIGINT"/>
         <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
-        <result property="startTime" column="startTime" jdbcType="TIMESTAMP"/>
-        <result property="endTime" column="endTime" jdbcType="TIMESTAMP"/>
+        <result property="startTime" column="startTime" jdbcType="VARCHAR"/>
+        <result property="endTime" column="endTime" jdbcType="VARCHAR"/>
         <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
     </resultMap>
 

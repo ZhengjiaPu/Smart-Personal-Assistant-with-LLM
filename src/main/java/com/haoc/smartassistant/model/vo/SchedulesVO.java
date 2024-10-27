@@ -22,7 +22,6 @@ public class SchedulesVO implements Serializable {
      * id
      */
     private Long id;
-
     /**
      * 标题
      */
@@ -39,28 +38,16 @@ public class SchedulesVO implements Serializable {
     private Long userId;
 
     /**
-     * 创建时间
-     */
-    private LocalDateTime createTime;
-
-    /**
-     * 更新时间
-     */
-    private LocalDateTime updateTime;
-
-    /**
-     * 标签列表
-     */
-    /**
      * startTime
      */
-    private LocalDateTime startTime;
+    private String startTime;
 
     /**
      * endTime
      */
-    private LocalDateTime endTime;
-    private List<String> tagList;
+    private String endTime;
+
+
 
     /**
      * 创建用户信息

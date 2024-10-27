@@ -210,22 +210,24 @@ public class SchedulesServiceImpl extends ServiceImpl<SchedulesMapper, Schedules
 
 
     @Override
-    public boolean addSchedulesFromAI(SchedulesAddRequest schedulesDto) {
-        Schedules schedules = new Schedules();
-        // 将DTO的字段赋值到实体类
-        schedules.setTitle(schedulesDto.getTitle());
-        schedules.setContent(schedulesDto.getContent());
-        schedules.setUserId(schedulesDto.getUserId());
-        schedules.setStartTime(schedulesDto.getStartTime());
-        schedules.setEndTime(schedulesDto.getEndTime());
-        schedules.setCreateTime(LocalDateTime.now());      // 设置创建时间为当前时间
-        schedules.setUpdateTime(LocalDateTime.now());      // 设置更新时间
-        schedules.setIsDelete(0);  // 默认未删除
+    public boolean addSchedulesFromAI(Schedules schedules) {
+        // 创建 Schedules 实体对象
+        Schedules schedule = new Schedules();
+        // 将DTO字段赋值到实体类
+        schedule.setTitle(schedules.getTitle());
+        schedule.setContent(schedules.getContent());
+        schedule.setUserId(schedules.getUserId());
+        schedule.setStartTime(schedules.getStartTime());
+        schedule.setEndTime(schedules.getEndTime());
+        schedule.setCreateTime(LocalDateTime.now());      // 设置创建时间
+        schedule.setUpdateTime(LocalDateTime.now());      // 设置更新时间
+        schedule.setIsDelete(0);  // 默认未删除
 
-        // 保存标签（如果tags字段需要保存到数据库，可以在此添加相关逻辑）
-        // 例如：保存tags到一个关联表或转换为字符串存储到schedules的一个字段中
+        // 调用save方法将schedule保存到数据库
+        boolean isSaved = this.save(schedule);
 
-        return this.save(schedules);
+        // 返回保存结果
+        return isSaved;
     }
 
 

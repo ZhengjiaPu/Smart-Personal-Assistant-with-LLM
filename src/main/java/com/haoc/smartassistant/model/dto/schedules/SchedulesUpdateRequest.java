@@ -5,6 +5,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import lombok.Data;
+import org.joda.time.DateTime;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -32,12 +34,12 @@ public class SchedulesUpdateRequest implements Serializable {
     /**
      * 开始时间
      */
-    private LocalDateTime startTime;
+    private String startTime;
 
     /**
      * 结束时间
      */
-    private LocalDateTime endTime;
+    private String endTime;
 
     private static final long serialVersionUID = 1L;
 }

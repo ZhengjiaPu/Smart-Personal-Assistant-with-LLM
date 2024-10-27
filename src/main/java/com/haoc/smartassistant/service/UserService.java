@@ -110,4 +110,11 @@ public interface UserService extends IService<User> {
      */
     QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest);
 
+    /**
+     * Summarizes the user data by fetching schedules, body data, and health data based on userId.
+     *
+     * @param userId the ID of the user
+     * @return A summarized string of the user's data
+     */
+    String summarizeUserData(Long userId) ;
 }

@@ -25,8 +25,8 @@ VALUES
 -- 插入 Health Monitoring Data
 INSERT INTO health_data (userId, heartRate, averageHeartRate, stepsPerMinute, sleepTime, deepSleep, lightSleep, remSleep, caloriesBurned, doctorName, createTime, updateTime)
 VALUES
-    (@user1Id, '68,70,72,71,73,70,72,73,69,70', 72, 105, 7.3, 28.00, 56.00, 16.00, 350, 'Dr. Smith', NOW(), NOW());
-
+    (@user1Id, '68,70,72,71,73,70,72,73,69,70', 72, 105, 7.3, 28.00, 56.00, 16.00, 350, 'Dr. Smith', NOW(), NOW()),
+(1, '70,72,73,71,74', 72.0, 78, 6.8, 30.0, 45.0, 25.0, 2100, 'Dr. Smith', '2024-10-25 08:00:00', '2024-10-25 08:00:00');
 -- 插入 Medicine Plan 数据
 INSERT INTO medicine_plan (userId, medicineName, dosage, alarmTime)
 VALUES
