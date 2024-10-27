@@ -53,9 +53,9 @@ create table if not exists body_data
 (
     id         bigint auto_increment comment 'id' primary key,
     userId     bigint                             not null comment 'userId',
-    height_cm    DECIMAL(5, 2)                      NULL COMMENT 'User height in cm',  -- User height in cm
-    weight_kg    DECIMAL(5, 2)                      NULL COMMENT 'User weight in kg',  -- User weight in kg
-    bmi          DECIMAL(5, 2)                      GENERATED ALWAYS AS (weight_kg / (height_cm / 100 * height_cm / 100)) STORED COMMENT 'Calculated BMI',  -- Calculated BMI
+    height_cm    INT                      NULL COMMENT 'User height in cm',  -- User height in cm
+    weight_kg    INT                     NULL COMMENT 'User weight in kg',  -- User weight in kg
+    bmi          DOUBLE                     GENERATED ALWAYS AS (weight_kg / (height_cm / 100 * height_cm / 100)) STORED COMMENT 'Calculated BMI',  -- Calculated BMI
     createTime datetime default CURRENT_TIMESTAMP not null comment 'createTime',
     updateTime datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment 'updateTime',
     isDelete   tinyint  default 0                 not null comment 'isDelete',

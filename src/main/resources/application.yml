@@ -37,7 +37,13 @@ spring:
       # 大小限制
       max-file-size: 10MB
 
+# Spotify config
+spotify:
+  customer:
+    server: ip=http://localhost:3000
 
+
+# lang chain config
 langchain4j:
   open-ai:
     chat-model:
@@ -101,3 +107,9 @@ knife4j:
   setting:
     language: zh_cn
 
+aws:
+  s3:
+    access-key: AKIA3M7AC6O2OZK4DAEH
+    secret-key: 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
+    region: ap-southeast-2
+    bucket-name: avatar-bucket-elec5620
