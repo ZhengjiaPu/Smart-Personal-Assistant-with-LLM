@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: spa_db
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+    networks:
+      - mynetwork
+
+  smartpersonalai:
+    build: .
+    ports:
+      - "8101:8101"
+    depends_on:
+      - mysql
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge

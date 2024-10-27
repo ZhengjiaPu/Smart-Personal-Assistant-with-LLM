@@ -6,6 +6,7 @@ import lombok.Data;
 import org.springframework.beans.BeanUtils;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -21,7 +22,6 @@ public class SchedulesVO implements Serializable {
      * id
      */
     private Long id;
-
     /**
      * 标题
      */
@@ -38,19 +38,16 @@ public class SchedulesVO implements Serializable {
     private Long userId;
 
     /**
-     * 创建时间
+     * startTime
      */
-    private Date createTime;
+    private String startTime;
 
     /**
-     * 更新时间
+     * endTime
      */
-    private Date updateTime;
+    private String endTime;
 
-    /**
-     * 标签列表
-     */
-    private List<String> tagList;
+
 
     /**
      * 创建用户信息
