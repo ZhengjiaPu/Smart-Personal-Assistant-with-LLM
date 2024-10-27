@@ -8,12 +8,16 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * body_data
  * @TableName body_data
  */
 @TableName(value ="body_data")
+@Getter
+@Setter
 @Data
 public class BodyData implements Serializable {
     /**
@@ -32,6 +36,7 @@ public class BodyData implements Serializable {
      * User height in cm
      */
     private Integer height_cm;
+
 
     /**
      * User weight in kg

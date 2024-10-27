@@ -3,6 +3,7 @@ package com.haoc.smartassistant.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.haoc.smartassistant.model.entity.BodyData;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
 /**
 * @author haochen
@@ -12,7 +13,8 @@ import org.apache.ibatis.annotations.Mapper;
 */
 
 public interface BodyDataMapper extends BaseMapper<BodyData> {
-
+    @Select("SELECT * FROM body_data WHERE userId = #{userId} AND isDelete = 0")
+    BodyData getBodyDataByUserId(Long userId);
 }
 
 

@@ -3,14 +3,20 @@ package com.haoc.smartassistant.model.entity;
 import com.baomidou.mybatisplus.annotation.*;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import org.joda.time.DateTime;
 
 /**
  * report
  * @TableName schedules
  */
 @TableName(value ="schedules")
+@Setter
+@Getter
 @Data
 public class Schedules implements Serializable {
     /**
@@ -25,6 +31,10 @@ public class Schedules implements Serializable {
     private String content;
 
     /**
+     * title
+     */
+    private String title;
+    /**
      * userId
      */
     private Long userId;
@@ -32,12 +42,22 @@ public class Schedules implements Serializable {
     /**
      * createTime
      */
-    private Date createTime;
+    private LocalDateTime createTime;
 
     /**
      * updateTime
      */
-    private Date updateTime;
+    private LocalDateTime updateTime;
+
+    /**
+     * startTime
+     */
+    private String startTime;
+
+    /**
+     * endTime
+     */
+    private String endTime;
 
     /**
      * isDelete
@@ -47,4 +67,5 @@ public class Schedules implements Serializable {
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
+
 }

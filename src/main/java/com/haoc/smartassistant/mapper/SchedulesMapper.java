@@ -3,6 +3,9 @@ package com.haoc.smartassistant.mapper;
 import com.haoc.smartassistant.model.entity.Schedules;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 /**
 * @author haochen
@@ -12,6 +15,8 @@ import org.apache.ibatis.annotations.Mapper;
 */
 
 public interface SchedulesMapper extends BaseMapper<Schedules> {
+    @Select("SELECT * FROM schedules WHERE userId = #{userId} AND isDelete = 0")
+    List<Schedules> getSchedulesByUserId(Long userId);
 
 }
 

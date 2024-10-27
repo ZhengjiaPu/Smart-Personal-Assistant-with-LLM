@@ -9,9 +9,13 @@ import com.haoc.smartassistant.common.ErrorCode;
 import com.haoc.smartassistant.constant.CommonConstant;
 import com.haoc.smartassistant.exception.BusinessException;
 import com.haoc.smartassistant.mapper.BodyDataMapper;
+import com.haoc.smartassistant.mapper.HealthDataMapper;
+import com.haoc.smartassistant.mapper.SchedulesMapper;
 import com.haoc.smartassistant.mapper.UserMapper;
 import com.haoc.smartassistant.model.dto.user.UserQueryRequest;
 import com.haoc.smartassistant.model.entity.BodyData;
+import com.haoc.smartassistant.model.entity.HealthData;
+import com.haoc.smartassistant.model.entity.Schedules;
 import com.haoc.smartassistant.model.entity.User;
 import com.haoc.smartassistant.model.enums.UserRoleEnum;
 import com.haoc.smartassistant.model.vo.LoginUserVO;
@@ -48,6 +52,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Resource
     BodyDataService bodyDataService;
+
+    @Resource
+    private SchedulesMapper schedulesMapper;
+
+    @Resource
+    private BodyDataMapper bodyDataMapper;
+
+    @Resource
+    private HealthDataMapper healthDataMapper;
     /**
      * 盐值，混淆密码
      */
@@ -254,4 +267,40 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 sortField);
         return queryWrapper;
     }
+
+    /**
+     * Summarizes the user data by fetching schedules, body data, and health data based on userId.
+     *
+     * @param userId the ID of the user
+     * @return A summarized string of the user's data
+     */
+    public String summarizeUserData(Long userId) {
+        StringBuilder summaryBuilder = new StringBuilder();
+
+        // Fetch schedules, body data, and health data for the user
+        List<Schedules> schedules = schedulesMapper.getSchedulesByUserId(userId);
+        BodyData bodyData = bodyDataMapper.getBodyDataByUserId(userId);
+        HealthData healthData = healthDataMapper.getHealthDataByUserId(userId);
+
+        // Build the summary without null checks
+        summaryBuilder.append("Summarized data for userId:"+ userId);
+        schedules.forEach(schedule -> {
+            summaryBuilder.append(String.format("Title: %s, Content: %s, Start: %s, End: %s; ",
+                    schedule.getTitle(), schedule.getContent(), schedule.getStartTime(), schedule.getEndTime()));
+        });
+
+        summaryBuilder.append(String.format("Body Data - Height: %s cm, Weight: %s kg, BMI: %s; ",
+                bodyData != null ? bodyData.getHeight_cm() : "null",
+                bodyData != null ? bodyData.getWeight_kg() : "null",
+                bodyData != null ? bodyData.getBmi() : "null"));
+
+        summaryBuilder.append(String.format("Health Data - Average Heart Rate: %s BPM, Steps Per Minute: %s, Sleep Time: %s hours, Calories Burned: %s; ",
+                healthData != null ? healthData.getAverageHeartRate() : "null",
+                healthData != null ? healthData.getStepsPerMinute() : "null",
+                healthData != null ? healthData.getSleepTime() : "null",
+                healthData != null ? healthData.getCaloriesBurned() : "null"));
+
+        return summaryBuilder.toString();
+    }
+
 }
