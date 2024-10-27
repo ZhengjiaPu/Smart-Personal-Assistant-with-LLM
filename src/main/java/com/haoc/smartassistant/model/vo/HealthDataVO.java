@@ -5,9 +5,8 @@ import lombok.Data;
 import org.springframework.beans.BeanUtils;
 
 import java.io.Serializable;
-import java.util.Date;
-
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * healthData视图
@@ -84,6 +83,21 @@ public class HealthDataVO implements Serializable {
      * 创建用户信息
      */
     private UserVO user;
+
+    /**
+     * 每日饮水量（升）
+     */
+    private BigDecimal waterIntake;
+
+    /**
+     * 每日热量摄入（卡路里）
+     */
+    private Integer caloricIntake;
+
+    /**
+     * 脂肪燃烧率（百分比）
+     */
+    private BigDecimal fatBurnRate;
 
     /**
      * 封装类转对象
