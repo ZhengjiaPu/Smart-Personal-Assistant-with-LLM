@@ -43,6 +43,11 @@ public class HealthData implements Serializable {
     private Integer stepsPerMinute;
 
     /**
+     * 每日步数
+     */
+    private Integer stepsPerDay;
+
+    /**
      * 每日睡眠时长（小时）
      */
     private BigDecimal sleepTime;
@@ -66,6 +71,21 @@ public class HealthData implements Serializable {
      * 卡路里消耗
      */
     private Integer caloriesBurned;
+
+    /**
+     * 水摄入量（升/天）
+     */
+    private BigDecimal waterIntake;
+
+    /**
+     * 热量摄入量（calories/day）
+     */
+    private Integer caloricIntake;
+
+    /**
+     * 脂肪燃烧率（%）
+     */
+    private BigDecimal fatBurnRate;
 
     /**
      * 医生姓名
@@ -101,11 +121,15 @@ public class HealthData implements Serializable {
         sb.append(", heartRate=").append(heartRate);
         sb.append(", averageHeartRate=").append(averageHeartRate);
         sb.append(", stepsPerMinute=").append(stepsPerMinute);
+        sb.append(", stepsPerDay=").append(stepsPerDay);
         sb.append(", sleepTime=").append(sleepTime);
         sb.append(", deepSleep=").append(deepSleep);
         sb.append(", lightSleep=").append(lightSleep);
         sb.append(", remSleep=").append(remSleep);
         sb.append(", caloriesBurned=").append(caloriesBurned);
+        sb.append(", waterIntake=").append(waterIntake);
+        sb.append(", caloricIntake=").append(caloricIntake);
+        sb.append(", fatBurnRate=").append(fatBurnRate);
         sb.append(", doctorName=").append(doctorName);
         sb.append(", createTime=").append(createTime);
         sb.append(", updateTime=").append(updateTime);

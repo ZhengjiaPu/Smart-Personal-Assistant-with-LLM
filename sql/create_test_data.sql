@@ -1,4 +1,4 @@
-use spa_db;
+USE spa_db;
 
 -- 插入测试用户数据
 INSERT INTO user (userAccount, userPassword, userName, userAvatar, userProfile, userRole)
@@ -17,15 +17,14 @@ SELECT id INTO @user3Id FROM user WHERE userAccount = 'user3' LIMIT 1;
 -- 插入 body_data 数据
 INSERT INTO body_data (userId, height_cm, weight_kg, createTime, updateTime)
 VALUES
-    (1845693955367346178, 175.00, 70.00, NOW(), NOW()),  -- Admin 用户的 body_data
-    (1845693955367346179, 180.00, 85.00, NOW(), NOW()),  -- user1 的 body_data
-    (1845693955367346180, 165.00, 60.00, NOW(), NOW()),  -- user2 的 body_data
-    (1845693955367346181, 170.00, 75.00, NOW(), NOW());  -- user3 的 body_data
+    (@user1Id, 175.00, 70.00, NOW(), NOW()),  -- user1 的 body_data
+    (@user2Id, 180.00, 85.00, NOW(), NOW()),  -- user2 的 body_data
+    (@user3Id, 165.00, 60.00, NOW(), NOW());  -- user3 的 body_data
 
--- 插入 Health Monitoring Data
-INSERT INTO health_data (userId, heartRate, averageHeartRate, stepsPerMinute, sleepTime, deepSleep, lightSleep, remSleep, caloriesBurned, doctorName, createTime, updateTime)
+-- 插入 Health Data
+INSERT INTO health_data (userId, heartRate, averageHeartRate, stepsPerMinute, stepsPerDay, sleepTime, deepSleep, lightSleep, remSleep, caloriesBurned, waterIntake, caloricIntake, fatBurnRate, doctorName, createTime, updateTime)
 VALUES
-    (@user1Id, '68,70,72,71,73,70,72,73,69,70', 72, 105, 7.3, 28.00, 56.00, 16.00, 350, 'Dr. Smith', NOW(), NOW());
+    (@user1Id, '68,70,72,71,73,70,72,73,69,70', 72, 105, 10500, 7.3, 28.00, 56.00, 16.00, 450, 2.5, 2200, 30.00, 'Dr. Smith', NOW(), NOW());
 
 -- 插入 Medicine Plan 数据
 INSERT INTO medicine_plan (userId, medicineName, dosage, alarmTime)
