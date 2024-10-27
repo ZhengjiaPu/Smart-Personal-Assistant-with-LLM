@@ -199,7 +199,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version> <!-- 确保插件支持 Java 17 -->
+                <version>3.10.1</version> <!-- 确保插件支持 Java 17 -->
                 <configuration>
                     <source>17</source>
                     <target>17</target>
